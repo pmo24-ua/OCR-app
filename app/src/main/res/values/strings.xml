@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">OCR</string>
+    <string name="el_resultado_del_ocr_aparecer_aqu">El resultado del OCR aparecerá aquí</string>
+    <string name="seleccionar_imagen">Seleccionar imagen</string>
+    <string name="tomar_foto">Tomar foto</string>
+    <string name="procesar_ocr">Procesar OCR</string>
+    <string name="image_preview_content_description">Vista previa de la imagen para procesar con OCR</string>
+</resources>

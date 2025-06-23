@@ -1,0 +1,263 @@
+package com.ejemplo.ocr
+
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
+import androidx.activity.result.contract.ActivityResultContracts.TakePicture
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.util.concurrent.TimeUnit
+
+class MainActivity : AppCompatActivity() {
+
+    // === CONFIGURABLE ===
+    private val ocrUrl = "http://10.0.2.2:8000/ocr"
+
+    // --- UI ---
+    private lateinit var imgPreview: ImageView
+    private lateinit var txtResult: TextView
+    private lateinit var prog: ProgressBar
+    private lateinit var btnOcr: Button
+
+    // --- Estado ---
+    private var currentBitmap: Bitmap? = null
+    private var cameraTempUri: Uri? = null
+
+    // --- OkHttp Client ---
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    // === ActivityResult Launchers ===
+    private lateinit var pickImageLauncher: ActivityResultLauncher<String>
+    private lateinit var takePhotoLauncher: ActivityResultLauncher<Uri>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        /* --------- init UI -------- */
+        findViewById<Button>(R.id.btnPick).setOnClickListener { pickImage() }
+        findViewById<Button>(R.id.btnCamera).setOnClickListener { takePhoto() }
+        btnOcr = findViewById(R.id.btnOcr)
+        imgPreview = findViewById(R.id.imgPreview)
+        txtResult = findViewById(R.id.txtResult)
+        prog = findViewById(R.id.progress)
+
+        btnOcr.setOnClickListener {
+            currentBitmap?.let { runOcrOnServer(it) }
+                ?: toast("Primero selecciona imagen")
+        }
+
+        /* ----- ActivityResult API ----- */
+        pickImageLauncher = registerForActivityResult(GetContent()) { uri: Uri? ->
+            uri?.let(::loadBitmapFromUri)
+        }
+        takePhotoLauncher = registerForActivityResult(TakePicture()) { ok ->
+            if (ok) cameraTempUri?.let(::loadBitmapFromUri)
+        }
+
+        requestRuntimePermissionsIfNeeded()
+    }
+
+    /* ---------------------------------------------------------- */
+    /*                 Selección / captura                        */
+    /* ---------------------------------------------------------- */
+
+    private fun pickImage() {
+        // Usa GetContent para seleccionar imagen
+        pickImageLauncher.launch("image/*")
+    }
+
+    private fun takePhoto() {
+        if (!checkPerm(Manifest.permission.CAMERA)) {
+            requestPerms(arrayOf(Manifest.permission.CAMERA))
+            return
+        }
+        val imgFile = try {
+            File.createTempFile("CamTmp_", ".jpg", cacheDir)
+        } catch (e: IOException) {
+            toast("Error creando archivo: ${e.localizedMessage}")
+            return
+        }
+
+        // Assign to a local val immediately after creation
+        val tempUriForLaunch = FileProvider.getUriForFile(
+            this,
+            "${packageName}.fp",
+            imgFile
+        )
+
+        // Store it in the class property as well for the result callback
+        this.cameraTempUri = tempUriForLaunch
+
+        // Launch with the guaranteed non-null local variable
+        takePhotoLauncher.launch(tempUriForLaunch)
+    }
+
+    private fun loadBitmapFromUri(uri: Uri) {
+        try {
+            contentResolver.openInputStream(uri)?.use { ins ->
+                val bmp = BitmapFactory.decodeStream(ins)
+                currentBitmap = bmp
+                imgPreview.setImageBitmap(bmp)
+                // Limpiar texto previo
+                txtResult.text = ""
+            }
+        } catch (e: Exception) {
+            toast("Error cargando imagen: ${e.localizedMessage}")
+        }
+    }
+
+    /* ---------------------------------------------------------- */
+    /*                       OCR remoto                           */
+    /* ---------------------------------------------------------- */
+
+    private fun runOcrOnServer(bitmap: Bitmap) {
+        // Escalar si es necesario
+        val scaled = scaleBitmapIfNeeded(bitmap, 1024)
+        val imgBytes = bitmapToJpegByteArray(scaled, 80)
+
+        // Preparar solicitud multipart
+        val reqBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+            .addFormDataPart(
+                name = "file",
+                filename = "image.jpg",
+                body = imgBytes.toRequestBody("image/jpeg".toMediaType())
+            )
+            .build()
+        val request = Request.Builder()
+            .url(ocrUrl)
+            .post(reqBody)
+            .build()
+
+        // UI: mostrar progreso
+        prog.visibility = ProgressBar.VISIBLE
+        btnOcr.isEnabled = false
+        val t0 = System.currentTimeMillis()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) =
+                ui { showError("Fallo de red: ${e.localizedMessage}") }
+
+            override fun onResponse(call: Call, response: Response) {
+                val t1 = System.currentTimeMillis()
+                if (!response.isSuccessful) {
+                    ui { showError("Error HTTP: ${response.code}") }
+                    return
+                }
+                val bodyStr = response.body?.string() ?: ""
+                try {
+                    val json = JSONObject(bodyStr)
+                    val text = json.optString("text", "(sin texto)")
+                    val latSrv = json.optLong("latency_ms", -1)
+                    val output = buildString {
+                        appendLine("Reconocido:")
+                        appendLine(text)
+                        appendLine("\nLatencia servidor: ${latSrv} ms")
+                        appendLine("Latencia total cliente: ${t1 - t0} ms")
+                    }
+                    ui { txtResult.text = output }
+                } catch (ex: Exception) {
+                    ui { showError("JSON malformado") }
+                }
+            }
+
+            // Helper para volver al hilo UI
+            fun ui(block: () -> Unit) = runOnUiThread {
+                prog.visibility = ProgressBar.GONE
+                btnOcr.isEnabled = true
+                block()
+            }
+        })
+    }
+
+    /* ---------------------------------------------------------- */
+    /*               Utilidades de imagen                         */
+    /* ---------------------------------------------------------- */
+
+    private fun scaleBitmapIfNeeded(src: Bitmap, maxWidth: Int): Bitmap =
+        if (src.width <= maxWidth) src
+        else Bitmap.createScaledBitmap(
+            src,
+            maxWidth,
+            (src.height * maxWidth / src.width.toFloat()).toInt(),
+            true
+        )
+
+    private fun bitmapToJpegByteArray(bmp: Bitmap, quality: Int): ByteArray =
+        ByteArrayOutputStream().apply {
+            bmp.compress(Bitmap.CompressFormat.JPEG, quality, this)
+        }.toByteArray()
+
+    /* ---------------------------------------------------------- */
+    /*                Permisos runtime (API 23+)                  */
+    /* ---------------------------------------------------------- */
+
+    private fun requestRuntimePermissionsIfNeeded() {
+        val list = mutableListOf<String>()
+        // INTERNET no es runtime
+        if (!checkPermReadExt()) {
+            list += Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+        if (!checkPerm(Manifest.permission.CAMERA)) {
+            list += Manifest.permission.CAMERA
+        }
+        if (list.isNotEmpty()) {
+            requestPerms(list.toTypedArray())
+        }
+    }
+
+    private fun checkPerm(permission: String) =
+        ContextCompat.checkSelfPermission(this, permission) ==
+                PackageManager.PERMISSION_GRANTED
+
+    private fun checkPermReadExt() =
+        Build.VERSION.SDK_INT >= 33 || checkPerm(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+    private fun requestPerms(perms: Array<String>) =
+        requestPermissions(perms, 1234)
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1234 && grantResults.any { it != PackageManager.PERMISSION_GRANTED }) {
+            toast("Permisos requeridos para funcionar")
+        } else {
+            // Si se concedió cámara ahora, podrías reintentar takePhoto()
+        }
+    }
+
+    /* ---------------------------------------------------------- */
+    /*                         helpers                             */
+    /* ---------------------------------------------------------- */
+
+    private fun toast(msg: String) =
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+    private fun showError(msg: String) {
+        // Muestra error en txtResult o Toast. Ejemplo:
+        txtResult.text = msg
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
+}
