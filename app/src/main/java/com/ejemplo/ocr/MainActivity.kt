@@ -1,6 +1,8 @@
 package com.ejemplo.ocr
 
+import android.content.Intent
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts.TakePicture
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -22,16 +25,25 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import androidx.core.graphics.scale
+import com.google.android.material.appbar.MaterialToolbar
 
 class MainActivity : AppCompatActivity() {
 
-    // === CONFIGURABLE ===
-    private val ocrUrl = "http://10.0.2.2:8000/ocr"
 
+    private fun getOcrUrl(): String {
+        val prefs = getSharedPreferences("ocr_prefs", Context.MODE_PRIVATE)
+        return if (prefs.getInt("engine", 0) == 0) {
+            "${BuildConfig.BASE_URL}/ocr"
+        } else {
+            "${BuildConfig.BASE_URL}/ocr_google"
+        }
+    }
     // --- UI ---
     private lateinit var imgPreview: ImageView
     private lateinit var txtResult: TextView
     private lateinit var prog: ProgressBar
+    private lateinit var uploadProgress: LinearProgressIndicator
     private lateinit var btnOcr: Button
 
     // --- Estado ---
@@ -40,6 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     // --- OkHttp Client ---
     private val client = OkHttpClient.Builder()
+        .addInterceptor(AuthInterceptor(this))
         .connectTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -51,7 +64,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        if (!AuthManager.isLoggedIn(this)) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
+        setContentView(R.layout.activity_single_scan)
+        findViewById<MaterialToolbar>(R.id.topAppBar).setNavigationOnClickListener {
+            finish()           // cierra y vuelve a la pantalla anterior
+        }
 
         /* --------- init UI -------- */
         findViewById<Button>(R.id.btnPick).setOnClickListener { pickImage() }
@@ -60,6 +82,7 @@ class MainActivity : AppCompatActivity() {
         imgPreview = findViewById(R.id.imgPreview)
         txtResult = findViewById(R.id.txtResult)
         prog = findViewById(R.id.progress)
+        uploadProgress = findViewById(R.id.uploadProgress)
 
         btnOcr.setOnClickListener {
             currentBitmap?.let { runOcrOnServer(it) }
@@ -75,6 +98,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestRuntimePermissionsIfNeeded()
+
+        when (intent.getStringExtra("mode")) {
+            "camera"  -> takePhoto()   // abre cámara directamente
+            "gallery" -> pickImage()   // abre selector de imágenes
+            // null → llegó desde otro lado, el usuario elegirá botón manual
+        }
     }
 
     /* ---------------------------------------------------------- */
@@ -135,16 +164,29 @@ class MainActivity : AppCompatActivity() {
         val scaled = scaleBitmapIfNeeded(bitmap, 1024)
         val imgBytes = bitmapToJpegByteArray(scaled, 80)
 
+        val realBody = imgBytes.toRequestBody("image/jpeg".toMediaType())
+
+        val countingBody = CountingRequestBody(realBody) { bytesWritten, totalBytes ->
+            val pct = (bytesWritten * 100 / totalBytes).toInt()
+            runOnUiThread {
+                uploadProgress.apply {
+                    isIndeterminate = false
+                    progress = pct
+                }
+            }
+        }
+
         // Preparar solicitud multipart
-        val reqBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+        val reqBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
             .addFormDataPart(
                 name = "file",
                 filename = "image.jpg",
-                body = imgBytes.toRequestBody("image/jpeg".toMediaType())
+                body = countingBody
             )
             .build()
         val request = Request.Builder()
-            .url(ocrUrl)
+            .url(getOcrUrl())
             .post(reqBody)
             .build()
 
@@ -193,14 +235,14 @@ class MainActivity : AppCompatActivity() {
     /*               Utilidades de imagen                         */
     /* ---------------------------------------------------------- */
 
-    private fun scaleBitmapIfNeeded(src: Bitmap, maxWidth: Int): Bitmap =
-        if (src.width <= maxWidth) src
-        else Bitmap.createScaledBitmap(
-            src,
-            maxWidth,
-            (src.height * maxWidth / src.width.toFloat()).toInt(),
-            true
-        )
+    private fun scaleBitmapIfNeeded(src: Bitmap, maxWidth: Int): Bitmap {
+        if (src.width <= maxWidth) return src
+
+        // Calcula la nueva altura para mantener el ratio
+        val newHeight = (src.height * maxWidth / src.width.toFloat()).toInt()
+        // src.scale(ancho, alto, filtro)
+        return src.scale(maxWidth, newHeight, true)
+    }
 
     private fun bitmapToJpegByteArray(bmp: Bitmap, quality: Int): ByteArray =
         ByteArrayOutputStream().apply {
