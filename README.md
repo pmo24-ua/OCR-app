@@ -14,12 +14,12 @@
 
 ## Demo & capturas
 
-| Pantalla                | Imagen                                  |
-|-------------------------|-----------------------------------------|
-| Pantalla principal      | ![Home](docs/imgs/home.png)             |
-| Selección de imágenes   | ![Batch Select](docs/imgs/batch.png)    |
-| Historial               | ![History](docs/imgs/history.png)       |
-| Ajustes                 | ![Settings](docs/imgs/settings.png)     |
+| Pantalla                | Imagen                                                        |
+|-------------------------|---------------------------------------------------------------|
+| Pantalla principal      | <img src="docs/imgs/home.png"   alt="Home"         width="200"/> |
+| Selección de imágenes   | <img src="docs/imgs/batch.png"  alt="Batch Select" width="200"/> |
+| Historial               | <img src="docs/imgs/history.png" alt="History"      width="200"/> |
+| Ajustes                 | <img src="docs/imgs/settings.png" alt="Settings"     width="200"/> |
 
 ---
 
