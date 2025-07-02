@@ -1,4 +1,4 @@
-# OCR Mobile – Cliente Android 📸📝
+# OCR Mobile – Cliente Androi
 > Aplicación Android que escanea imágenes (o lotes), extrae texto con **EasyOCR** o **Google Vision** y gestiona un historial personal protegido con JWT.  
 > 100 % **Kotlin**, _Jetpack Components_, **OkHttp**, _Coroutines_ y **Stripe PaymentSheet** para el upgrade a cuenta **Premium**.
 
