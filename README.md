@@ -7,9 +7,8 @@
 ## Índice
 1. [Demo & capturas](#demo--capturas)  
 2. [Características](#características)   
-3. [Requisitos](#requisitos)  
-4. [Ejecución y pruebas](#ejecución-y-pruebas)  
-5. [Seguridad](#seguridad)  
+3. [Ejecución y pruebas](#ejecución-y-pruebas)  
+4. [Seguridad](#seguridad)  
 
 ---
 
@@ -40,26 +39,6 @@
   * Borrado individual o completo  
 * **Stripe PaymentSheet** para compra in-app  
 * Preferencias locales (motor OCR)    
-
-* Dependencias clave:
-
-  | Librería                | Uso principal                          |
-  |-------------------------|----------------------------------------|
-  | **OkHttp**              | Cliente HTTP + `AuthInterceptor`       |
-  | **Material 3**          | Componentes UI                         |
-  | **Stripe PaymentSheet** | Pago y upgrade a Premium               |
-  | **Navigation**          | Navegación y back-stack                |
-
----
-## Requisitos
-
-| Herramienta            | Versión mínima recomendada |
-|------------------------|----------------------------|
-| **Android Studio**     | Iguana (2024.1)            |
-| **Gradle**             | 8.5                        |
-| **JDK**                | 17                         |
-| **Backend FastAPI**    | ≥ 0.110 corriendo en 8000  |
-| **Stripe account**     | Claves *test* activas      |
 
 
 ## Ejecución y pruebas rápidas
