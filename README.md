@@ -19,9 +19,8 @@
 |---------------------------------------------|------------------------------------------|
 | Pantalla principal                          | `![Home](docs/img/home.png)`             |
 | Selección de imágenes (lote)                | `![Batch Select](docs/img/batch.png)`    |
-| Resultado OCR                               | `![Result](docs/img/result.png)`         |
-| Historial con agrupación por fecha          | `![History](docs/img/history.png)`       |
-| Ajustes y upgrade a Premium mediante Stripe | `![Settings](docs/img/settings.png)`     |
+| Historial                                   | `![History](docs/img/history.png)`       |
+| Ajustes                                     | `![Settings](docs/img/settings.png)`     |
 
 ---
 
