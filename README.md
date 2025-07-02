@@ -14,13 +14,12 @@
 
 ## Demo & capturas
 
-
-| Pantalla                                    | Imagen                                   |
-|---------------------------------------------|------------------------------------------|
-| Pantalla principal                          | `![Home](docs/imgs/home.png)`             |
-| Selección de imágenes (lote)                | `![Batch Select](docs/imgs/batch.png)`    |
-| Historial                                   | `![History](docs/imgs/history.png)`       |
-| Ajustes                                     | `![Settings](docs/imgs/settings.png)`     |
+| Pantalla                | Imagen                                  |
+|-------------------------|-----------------------------------------|
+| Pantalla principal      | ![Home](docs/imgs/home.png)             |
+| Selección de imágenes   | ![Batch Select](docs/imgs/batch.png)    |
+| Historial               | ![History](docs/imgs/history.png)       |
+| Ajustes                 | ![Settings](docs/imgs/settings.png)     |
 
 ---
 
