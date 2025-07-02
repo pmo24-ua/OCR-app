@@ -17,10 +17,10 @@
 
 | Pantalla                                    | Imagen                                   |
 |---------------------------------------------|------------------------------------------|
-| Pantalla principal                          | `![Home](docs/img/home.png)`             |
-| Selección de imágenes (lote)                | `![Batch Select](docs/img/batch.png)`    |
-| Historial                                   | `![History](docs/img/history.png)`       |
-| Ajustes                                     | `![Settings](docs/img/settings.png)`     |
+| Pantalla principal                          | `![Home](docs/imgs/home.png)`             |
+| Selección de imágenes (lote)                | `![Batch Select](docs/imgs/batch.png)`    |
+| Historial                                   | `![History](docs/imgs/history.png)`       |
+| Ajustes                                     | `![Settings](docs/imgs/settings.png)`     |
 
 ---
 
