@@ -72,7 +72,7 @@
 
     <string name="option_easyocr">EasyOCR (gratuito)</string>
     <string name="option_googlevision">Google Vision (Premium)</string>
-
+    <string name="reconocido">Reconocido:</string>
 
 
 </resources>

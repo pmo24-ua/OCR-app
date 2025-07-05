@@ -45,6 +45,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prog: ProgressBar
     private lateinit var uploadProgress: LinearProgressIndicator
     private lateinit var btnOcr: Button
+    private lateinit var tvHeader: TextView
+    private lateinit var tvOcrText: TextView
+    private lateinit var tvLatency: TextView
+
 
     // --- Estado ---
     private var currentBitmap: Bitmap? = null
@@ -81,6 +85,9 @@ class MainActivity : AppCompatActivity() {
         txtResult = findViewById(R.id.txtResult)
         prog = findViewById(R.id.progress)
         uploadProgress = findViewById(R.id.uploadProgress)
+        tvHeader   = findViewById(R.id.tvHeader)
+        tvOcrText  = txtResult
+        tvLatency  = findViewById(R.id.tvLatency)
 
         btnOcr.setOnClickListener {
             currentBitmap?.let { runOcrOnServer(it) }
@@ -193,16 +200,22 @@ class MainActivity : AppCompatActivity() {
                 }
                 val bodyStr = response.body?.string() ?: ""
                 try {
-                    val json = JSONObject(bodyStr)
-                    val text = json.optString("text", "(sin texto)")
-                    val latSrv = json.optLong("latency_ms", -1)
-                    val output = buildString {
-                        appendLine("Reconocido:")
-                        appendLine(text)
-                        appendLine("\nLatencia servidor: ${latSrv} ms")
-                        appendLine("Latencia total cliente: ${t1 - t0} ms")
+                    val json    = JSONObject(bodyStr)
+                    val text    = json.optString("text", "(sin texto)")
+                    val latSrv  = json.optLong("latency_ms", -1)
+                    val latTotal = t1 - t0
+
+                    ui {
+                        // 1) Título fijo (o dinámico si quieres)
+                        tvHeader.text = "Reconocido:"
+
+                        // 2) Texto OCR
+                        tvOcrText.text = text
+
+                        // 3) Latencias, con salto de línea entre ambas
+                        tvLatency.text = "Latencia servidor: ${latSrv} ms\n" +
+                                "Latencia total cliente: ${latTotal} ms"
                     }
-                    ui { txtResult.text = output }
                 } catch (ex: Exception) {
                     ui { showError("JSON malformado") }
                 }
