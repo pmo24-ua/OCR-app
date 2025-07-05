@@ -1,6 +1,5 @@
 # OCR Mobile – Cliente Android
 > Aplicación Android que escanea imágenes (o lotes), extrae texto con **EasyOCR** o **Google Vision** y gestiona un historial personal protegido con JWT.  
-> 100 % **Kotlin**, _Jetpack Components_, **OkHttp**, _Coroutines_ y **Stripe PaymentSheet** para el upgrade a cuenta **Premium**.
 
 ---
 
@@ -65,5 +64,12 @@ El JWT incluye los siguientes _claims_:
 | `sub`         | Email del usuario                  |
 | `is_premium`  | `true` si la cuenta es Premium     |
 | `exp`         | Fecha de expiración (24 horas)     |
+
+## Roadmap
+
+- [ ] Reforzar la seguridad
+- [ ] Permitir modo completamente offline
+- [ ] Añadir post-procesado semántico 
+- [ ] Ofrecer opciones de exportación
 
 
