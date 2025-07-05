@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CardScan">
+        <attr name="cardIcon"     format="reference"/>
+        <attr name="cardLabel"    format="string"/>
+        <attr name="cardGradient" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="QuickItem">
+        <attr name="quickIcon"   format="reference"/>
+        <attr name="quickLabel"  format="string"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Fondo transparente -->
+    <solid android:color="@android:color/transparent"/>
+
+    <!-- Esquinas redondeadas -->
+    <corners android:radius="8dp"/>
+
+    <!-- Borde punteado: ancho 2dp, color purple_500 -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/purple_500"
+        android:dashWidth="8dp"
+        android:dashGap="4dp"/>
+</shape>

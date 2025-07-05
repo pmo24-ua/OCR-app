@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+
+    <!--
+        Con mask garantizamos que el ripple respete la forma de la tarjeta
+        (esquinas redondeadas).  Si prefieres más simple, puedes omitir
+        este bloque <item> y dejar el <ripple/> vacío.
+    -->
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <!-- color sólido con 100% opacidad; no afecta a la UI final -->
+            <solid android:color="@android:color/white" />
+        </shape>
+    </item>
+</ripple>

@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">OCR PRO</string>
+    <string name="el_resultado_del_ocr_aparecer_aqu">El resultado del OCR aparecerá aquí</string>
+    <string name="seleccionar_imagen">Seleccionar imagen</string>
+    <string name="tomar_foto">Tomar foto</string>
+    <string name="procesar_ocr">Procesar OCR</string>
+    <string name="image_preview_content_description">Vista previa de la imagen para procesar con OCR</string>
+    <string name="ocr_pro">OCR Pro</string>
+    <string name="reconocimiento_de_texto_inteligente">Reconocimiento de texto inteligente</string>
+    <string name="iniciar_sesi_n">Iniciar Sesión</string>
+    <string name="accede_a_tu_cuenta_para_continuar">Accede a tu cuenta para continuar</string>
+    <string name="email">Email</string>
+    <string name="contrase_a">Contraseña</string>
+    <string name="no_tienes_cuenta_reg_strate">¿No tienes cuenta? Regístrate</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="password">Contraseña</string>
+    <string name="registrarse">Regístrate</string>
+    <string name="subir_archivos">Subir Archivos</string>
+    <string name="seleccionar_m_ltiples">Seleccionar múltiples</string>
+    <string name="enviar">Enviar\n</string>
+    <string name="_0_im_genes">0 imágenes</string>
+    <string name="usar_c_mara">Usar Cámara</string>
+    <string name="tomar_fotos">Tomar fotos</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="historial">Historial</string>
+    <string name="escanear">Escanear</string>
+    <string name="inicio">Inicio</string>
+    <string name="label">Label</string>
+    <string name="acceso_r_pido">Acceso rápido</string>
+    <string name="camara">Camara</string>
+    <string name="desc_camera_preview">Vista previa de la foto tomada</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_escanear">Escanear</string>
+    <string name="nav_historial">Historial</string>
+    <string name="nav_ajustes">Ajustes</string>
+    <string name="subir_imagen">Subir imagen</string>
+    <string name="escaneo_lotes">Escaneo por lotes</string>
+
+    <string name="cuenta_premium">Cuenta Premium</string>
+    <string name="no_logeado">Sin sesión</string>
+    <string name="inicia_para_ver">Inicia sesión para ver tus datos</string>
+    <string name="resultados">Resultados</string>
+    <!-- “Resultado 1”, “Resultado 2”… -->
+    <string name="result_n">Resultado %1$d</string>
+    <string name="copiar">Copiar</string>
+    <string name="copiado">Copiado al portapapeles</string>
+    <string name="escanear_imagen">Escanear Imagen\n</string>
+    <string name="cerrar_sesion">Cerrar Sesión</string>
+    <string name="vaciar_historial">Vaciar Historial\n</string>
+    <string name="avatar">Avatar\n</string>
+    <string name="tipo_cuenta_free">Cuenta Gratuita</string>
+    <string name="no_hay_sesion">No hay sesión Iniciada</string>
+    <string name="ya_iniciado">Sesión ya Iniciada</string>
+    <string name="error_fmt">Error: %1$s</string>
+
+    <string name="mensaje_no_sesion">Debes iniciar sesión para ver tu historial</string>
+    <string name="ir_a_login">Iniciar sesión</string>
+
+    <string name="filtrar_fecha">Filtrar por fecha</string>
+    <string name="borrar">Borrar</string>
+    <string name="confirmar_borrado">¿Eliminar este registro?</string>
+    <string name="borrado_ok">Registro eliminado</string>
+
+    <string name="borrar_historial">Borrar historial</string>
+    <string name="no_historial">Sin registros para este día</string>
+    <string name="confirmar_borrado_total">¿Eliminar todo tu historial?</string>
+    <string name="escanear_etiqueta">Escanear Etiqueta</string>
+
+    <string name="ver_todo">Ver todo</string>
+    <string name="historial_detalle">Texto completo</string>
+    <string name="seleccionar_motor">Seleccionar motor OCR</string>
+
+    <string name="option_easyocr">EasyOCR (gratuito)</string>
+    <string name="option_googlevision">Google Vision (Premium)</string>
+    <string name="reconocido">Reconocido:</string>
+
+
+</resources>

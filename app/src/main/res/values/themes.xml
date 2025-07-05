@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.OCR" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+    </style>
+    <style name="CardDashed">
+        <item name="android:background">@drawable/card_dashed</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- Título dentro de cards -->
+    <style name="CardTitle">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/purple_500</item>
+    </style>
+
+    <!-- Subtítulo dentro de cards -->
+    <style name="CardSubtitle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+    </style>
+
+    <style name="CircleImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+    <style name="Shape.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">20%</item>
+    </style>    <style name="Shape.Medium" parent="ShapeAppearance.Material3.MediumComponent"/>
+
+
+    <style name="Widget.OCR.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">2dp</item>
+        <item name="shapeAppearance">@style/Shape.Medium</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="android:foreground">@drawable/card_foreground_ripple</item>
+    </style>
+
+    <style name="Widget.OCR.Card.IconButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:padding">8dp</item>
+        <item name="iconSize">20dp</item>
+
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="backgroundTint">?attr/colorSurfaceContainerHigh</item>
+        <item name="rippleColor">?attr/colorPrimary</item>
+        <item name="shapeAppearance">@style/Shape.Small</item>
+    </style>
+
+    <style name="HistIconBtn">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+
+    <!-- Texto principal dentro de la tarjeta -->
+    <style name="TextAppearance.OCR.BodyMedium" parent="@style/TextAppearance.Material3.BodyMedium"/>
+
+
+</resources>
