@@ -6,17 +6,11 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/nav_home">
 
-    <!-- ─────────────────────────
-         Fragment: Inicio (Home)
-         ───────────────────────── -->
     <fragment
         android:id="@+id/nav_home"
         android:name="com.ejemplo.ocr.HomeFragment"
         android:label="Inicio"
         tools:layout="@layout/fragment_home">
-
-        <!-- Acciones desde Home hacia otras pantallas
-             (se usan en HomeFragment con findNavController()) -->
 
     </fragment>
     <fragment

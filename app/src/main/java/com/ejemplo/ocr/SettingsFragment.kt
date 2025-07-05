@@ -31,18 +31,16 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private lateinit var paymentSheet: PaymentSheet
     private var paymentIntentClientSecret: String? = null
 
-    // Temporalmente hardcodeada; luego puedes pasarla vía BuildConfig
+    // Temporalmente hardcodeada  ):
     private val STRIPE_PUBLISHABLE_KEY_HARDCODED =
         "pk_test_51ReXyIH180xSNuLMytRVzNn0GWVIXbvXGHt8q2mhGqlHd9Yj3yodW0cTPtyB35AJe4JmwuT63wFmgdTobJJlPdcx00ANwqNFgH"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Inicializa SDK de Stripe con la clave "publishable"
         PaymentConfiguration.init(
             requireContext(),
             STRIPE_PUBLISHABLE_KEY_HARDCODED
         )
-        // Configura el PaymentSheet y su callback
         paymentSheet = PaymentSheet(
             this,
             PaymentSheetResultCallback { result ->
@@ -60,7 +58,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
 
-        // ─── Datos de usuario (prefs) ───
         val user = AuthManager.getCurrentUser(requireContext())
         val tvName  = view.findViewById<TextView>(R.id.tvName)
         val tvEmail = view.findViewById<TextView>(R.id.tvEmail)
@@ -79,7 +76,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             chipAcc.visibility = View.GONE
         }
 
-        // Botón “Cerrar sesión”
+        // Botón Cerrar sesión
         view.findViewById<MaterialButton>(R.id.btnLogout)
             .setOnClickListener {
                 if (!AuthManager.isLoggedIn(requireContext())) {
@@ -95,7 +92,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 )
             }
 
-        // Botón “Borrar historial”
+        // Botón Borrar historial
         view.findViewById<MaterialButton>(R.id.btnClearHist)
             .setOnClickListener {
                 if (!AuthManager.isLoggedIn(requireContext())) {
@@ -118,7 +115,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     .show()
             }
 
-        // Botón “Seleccionar motor OCR”
+        // Botón Seleccionar motor OCR
         val btnSelect = view.findViewById<MaterialButton>(R.id.btnSelectEngine)
         btnSelect.setOnClickListener {
             showEngineSelectionDialog()
@@ -126,7 +123,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         btnSelect.isEnabled = AuthManager.isLoggedIn(requireContext())
     }
 
-    // ─── Diálogo para escoger motor OCR ───
+    //  Diálogo para escoger motor OCR
     private fun showEngineSelectionDialog() {
         val options = arrayOf(
             getString(R.string.option_easyocr),
@@ -144,7 +141,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             }
             .setPositiveButton("Aceptar") { _, _ ->
                 if (selected == 1 && AuthManager.getCurrentUser(requireContext())?.isFree == true) {
-                    // Quiere Google Vision pero aún es free → pago
+                    // Quiere Google Vision pero aún es free --> pago
                     startPayment()
                 } else {
                     // EasyOCR o ya premium
@@ -157,25 +154,25 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
 
-    // ─── Iniciar flujo de pago  ───
+    //  Iniciar flujo de pago
     private fun startPayment() {
         lifecycleScope.launch {
             try {
-                // 1) JWT
+                // JWT
                 val token = AuthManager.token(requireContext())
                     ?: throw IOException("Sin token")
 
-                // 2) Body vacío + JSON
+                // Body vacío + JSON
                 val emptyJson = "".toRequestBody("application/json".toMediaType())
 
-                // 3) Llamada al endpoint que acabamos de crear
+                // Llamada al endpoint que acabamos de crear
                 val request = Request.Builder()
                     .url("${BuildConfig.BASE_URL}/create-payment-intent")
                     .post(emptyJson)
                     .addHeader("Authorization", "Bearer $token")
                     .build()
 
-                // 4) Ejecutar en IO
+                // Ejecutar en IO
                 val response = withContext(Dispatchers.IO) {
                     OkHttpClient().newCall(request).execute()
                 }
@@ -183,12 +180,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     throw IOException("HTTP ${response.code}")
                 }
 
-                // 5) Extraer client_secret
+                // Extraer client_secret
                 val clientSecret = JSONObject(response.body!!.string())
                     .getString("client_secret")
                 paymentIntentClientSecret = clientSecret
 
-                // 6) Mostrar PaymentSheet con PaymentIntent
+                // Mostrar PaymentSheet con PaymentIntent
                 paymentSheet.presentWithPaymentIntent(
                     clientSecret,
                     PaymentSheet.Configuration(
@@ -205,7 +202,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
 
-    // ─── Resultado del PaymentSheet ───
+    //  Resultado del PaymentSheet
     private fun onPaymentSheetResult(paymentResult: PaymentSheetResult) {
         when (paymentResult) {
             is PaymentSheetResult.Completed -> {
@@ -219,7 +216,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
     }
 
-    // ─── Avisar al backend para marcar premium y renovar token ───
+    //  Avisar al backend para marcar premium y renovar token
     private fun confirmUpgradeOnServer() {
         lifecycleScope.launch {
             try {
@@ -241,7 +238,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     .addHeader("Authorization", "Bearer $token")
                     .build()
 
-                // <<< Aquí el cambio principal
                 val resp = withContext(Dispatchers.IO) {
                     OkHttpClient().newCall(req).execute()
                 }
@@ -266,7 +262,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
     }
 
-    // ─── Guardar pref. local de motor OCR ───
+    //  Guardar pref. local de motor OCR
     private fun saveEnginePreference(selected: Int) {
         requireContext()
             .getSharedPreferences("ocr_prefs", Context.MODE_PRIVATE)
@@ -275,7 +271,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             .apply()
     }
 
-    // ─── Helpers ───
     private fun toast(msg: String) =
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 

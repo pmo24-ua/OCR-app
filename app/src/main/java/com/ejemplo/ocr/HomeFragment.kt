@@ -1,4 +1,3 @@
-// app/src/main/java/com/ejemplo/ocr/HomeFragment.kt
 package com.ejemplo.ocr
 
 import android.content.Intent
@@ -14,26 +13,23 @@ import com.google.android.material.card.MaterialCardView
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
-    /** Botón de “Iniciar sesión” (es opcional, podemos ocultarlo) */
     private var btnLogin: MaterialButton? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        /* ─────── BOTÓN LOGIN (esquina superior derecha) ─────── */
+        /* BOTÓN LOGIN  */
         btnLogin = view.findViewById<MaterialButton>(R.id.btnLogin)?.apply {
             setOnClickListener {
                 startActivity(Intent(requireContext(), LoginActivity::class.java))
             }
         }
 
-        /* ─────── TARJETA 1 · “Subir imagen” ─────── */
+        /* Subir imagen */
         val galleryCard = view.findViewById<MaterialCardView>(R.id.cardGallery)
         galleryCard.apply {
-            // fondo gradiente (ajústalo a tu drawable / color)
             background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_blue_grad)
 
-            // icono + texto
             findViewById<ImageView>(R.id.imgIcon)
                 .setImageResource(R.drawable.ic_upload)
             findViewById<TextView>(R.id.tvLabel).apply {
@@ -50,7 +46,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        /* ─────── TARJETA 2 · “Escaneo por lotes” ─────── */
+        /* Escaneo por lotes */
         val batchCard = view.findViewById<MaterialCardView>(R.id.cardBatch)
         batchCard.apply {
             background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_green_grad)
@@ -70,13 +66,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         updateLoginButton()   // primera comprobación
     }
 
-    /** Se vuelve a chequear cada vez que el fragmento vuelve al primer plano */
     override fun onResume() {
         super.onResume()
         updateLoginButton()
     }
 
-    /** Muestra u oculta el botón de login según exista token en prefs */
     private fun updateLoginButton() {
         btnLogin?.visibility =
             if (AuthManager.isLoggedIn(requireContext()))

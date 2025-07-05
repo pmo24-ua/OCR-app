@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    // === ActivityResult Launchers ===
     private lateinit var pickImageLauncher: ActivityResultLauncher<String>
     private lateinit var takePhotoLauncher: ActivityResultLauncher<Uri>
 
@@ -75,7 +74,6 @@ class MainActivity : AppCompatActivity() {
             finish()           // cierra y vuelve a la pantalla anterior
         }
 
-        /* --------- init UI -------- */
         findViewById<Button>(R.id.btnPick).setOnClickListener { pickImage() }
         findViewById<Button>(R.id.btnCamera).setOnClickListener { takePhoto() }
         btnOcr = findViewById(R.id.btnOcr)
@@ -89,7 +87,6 @@ class MainActivity : AppCompatActivity() {
                 ?: toast("Primero selecciona imagen")
         }
 
-        /* ----- ActivityResult API ----- */
         pickImageLauncher = registerForActivityResult(GetContent()) { uri: Uri? ->
             uri?.let(::loadBitmapFromUri)
         }
@@ -102,16 +99,12 @@ class MainActivity : AppCompatActivity() {
         when (intent.getStringExtra("mode")) {
             "camera"  -> takePhoto()   // abre cámara directamente
             "gallery" -> pickImage()   // abre selector de imágenes
-            // null → llegó desde otro lado, el usuario elegirá botón manual
         }
     }
 
-    /* ---------------------------------------------------------- */
-    /*                 Selección / captura                        */
-    /* ---------------------------------------------------------- */
 
     private fun pickImage() {
-        // Usa GetContent para seleccionar imagen
+        // seleccionar imagen
         pickImageLauncher.launch("image/*")
     }
 
@@ -127,17 +120,13 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Assign to a local val immediately after creation
         val tempUriForLaunch = FileProvider.getUriForFile(
             this,
             "${packageName}.fp",
             imgFile
         )
 
-        // Store it in the class property as well for the result callback
         this.cameraTempUri = tempUriForLaunch
-
-        // Launch with the guaranteed non-null local variable
         takePhotoLauncher.launch(tempUriForLaunch)
     }
 
@@ -155,9 +144,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /* ---------------------------------------------------------- */
-    /*                       OCR remoto                           */
-    /* ---------------------------------------------------------- */
+
 
     private fun runOcrOnServer(bitmap: Bitmap) {
         // Escalar si es necesario
@@ -176,7 +163,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Preparar solicitud multipart
         val reqBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(
@@ -190,7 +176,7 @@ class MainActivity : AppCompatActivity() {
             .post(reqBody)
             .build()
 
-        // UI: mostrar progreso
+        // mostrar progreso
         prog.visibility = ProgressBar.VISIBLE
         btnOcr.isEnabled = false
         val t0 = System.currentTimeMillis()
@@ -222,7 +208,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            // Helper para volver al hilo UI
             fun ui(block: () -> Unit) = runOnUiThread {
                 prog.visibility = ProgressBar.GONE
                 btnOcr.isEnabled = true
@@ -231,14 +216,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    /* ---------------------------------------------------------- */
-    /*               Utilidades de imagen                         */
-    /* ---------------------------------------------------------- */
 
     private fun scaleBitmapIfNeeded(src: Bitmap, maxWidth: Int): Bitmap {
         if (src.width <= maxWidth) return src
 
-        // Calcula la nueva altura para mantener el ratio
         val newHeight = (src.height * maxWidth / src.width.toFloat()).toInt()
         // src.scale(ancho, alto, filtro)
         return src.scale(maxWidth, newHeight, true)
@@ -249,13 +230,10 @@ class MainActivity : AppCompatActivity() {
             bmp.compress(Bitmap.CompressFormat.JPEG, quality, this)
         }.toByteArray()
 
-    /* ---------------------------------------------------------- */
-    /*                Permisos runtime (API 23+)                  */
-    /* ---------------------------------------------------------- */
 
     private fun requestRuntimePermissionsIfNeeded() {
         val list = mutableListOf<String>()
-        // INTERNET no es runtime
+
         if (!checkPermReadExt()) {
             list += Manifest.permission.READ_EXTERNAL_STORAGE
         }
@@ -285,20 +263,14 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1234 && grantResults.any { it != PackageManager.PERMISSION_GRANTED }) {
             toast("Permisos requeridos para funcionar")
-        } else {
-            // Si se concedió cámara ahora, podrías reintentar takePhoto()
         }
     }
 
-    /* ---------------------------------------------------------- */
-    /*                         helpers                             */
-    /* ---------------------------------------------------------- */
 
     private fun toast(msg: String) =
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
     private fun showError(msg: String) {
-        // Muestra error en txtResult o Toast. Ejemplo:
         txtResult.text = msg
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }

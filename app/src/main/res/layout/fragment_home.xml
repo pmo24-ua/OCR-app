@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- ─────────────────  BOTÓN “INICIAR SESIÓN”  ───────────────── -->
+    <!--  INICIAR SESIÓN-->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogin"
         style="@style/Widget.Material3.Button.OutlinedButton"
@@ -22,7 +22,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="8dp"/>
 
-    <!-- ───────────── CONTENIDO DESPLAZABLE ───────────── -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll"
         android:fillViewport="true"
@@ -58,7 +57,6 @@
                 android:textColor="@color/gray_600"
                 android:layout_marginBottom="24dp"/>
 
-            <!-- Sección -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +66,7 @@
                 android:drawableStart="@drawable/ic_bolt"
                 android:drawablePadding="4dp"/>
 
-            <!-- TARJETA: Subir imagen -->
+            <!-- TARJETA 1 -->
             <include
                 android:id="@+id/cardGallery"
                 layout="@layout/item_card_scan"
@@ -76,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"/>
 
-            <!-- TARJETA: Escaneo por lotes -->
+            <!-- TARJETA2 -->
             <include
                 android:id="@+id/cardBatch"
                 layout="@layout/item_card_scan"

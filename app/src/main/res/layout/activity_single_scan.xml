@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- 1) AppBar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
@@ -18,7 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 2) Botones lado a lado -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnPick"
         style="@style/Widget.Material3.Button.OutlinedButton"
@@ -44,7 +42,7 @@
         app:layout_constraintHorizontal_weight="1"
         android:layout_marginStart="8dp"/>
 
-    <!-- 3) Imagen preview debajo de los botones -->
+    <!-- Imagen preview debajo de los botones -->
     <ImageView
         android:id="@+id/imgPreview"
         android:layout_width="0dp"
@@ -57,7 +55,7 @@
         app:layout_constraintDimensionRatio="16:9"
         android:layout_marginTop="16dp"/>
 
-    <!-- 4) Botón OCR -->
+    <!-- Botón OCR -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOcr"
         style="@style/Widget.Material3.Button"
@@ -69,7 +67,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- 5) Progreso indeterminado de subida -->
+    <!-- Progreso de subida -->
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/uploadProgress"
         android:layout_width="0dp"
@@ -80,7 +78,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp"/>
 
-    <!-- 6) Spinner mientras espera respuesta OCR -->
+    <!-- Spinner -->
     <ProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleLarge"
@@ -92,7 +90,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp"/>
 
-    <!-- 7) Resultado en ScrollView -->
+    <!-- Resultado -->
     <ScrollView
         android:id="@+id/scrollResult"
         android:layout_width="0dp"

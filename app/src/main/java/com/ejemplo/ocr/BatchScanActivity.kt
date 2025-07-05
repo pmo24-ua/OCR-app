@@ -59,11 +59,8 @@ class BatchScanActivity : AppCompatActivity() {
             .build()
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    // Launchers definidos a nivel de propiedad, para evitar registrarlos dentro de funciones:
-    // ══════════════════════════════════════════════════════════════════
 
-    // 1) Selector de múltiples imágenes de galería:
+    // Selector de múltiples imágenes de galería:
     private val pickMulti =
         registerForActivityResult(GetMultipleContents()) { uris: List<Uri> ->
             if (uris.isEmpty()) return@registerForActivityResult          // nada elegido
@@ -81,7 +78,6 @@ class BatchScanActivity : AppCompatActivity() {
         }
 
 
-    // 2) Para tomar foto con cámara: guardamos tmpPhotoUri antes de lanzar
     private var tmpPhotoUri: Uri? = null
     private val takePhoto =
         registerForActivityResult(TakePicture()) { ok: Boolean ->
@@ -98,7 +94,6 @@ class BatchScanActivity : AppCompatActivity() {
         }
 
 
-    // 3) RequestPermission para cámara: registrado también a nivel de clase
     private val requestCameraPermission =
         registerForActivityResult(RequestPermission()) { granted: Boolean ->
             if (granted) {
@@ -121,22 +116,20 @@ class BatchScanActivity : AppCompatActivity() {
 
         findViewById<MaterialToolbar>(R.id.toolbar)
             .setNavigationOnClickListener { finish() }
+
         // Referencias a vistas
         recycler       = findViewById(R.id.recyclerThumbs)
         badge          = findViewById(R.id.badgeCount)
         fabSend        = findViewById(R.id.fabSend)
         progressBar    = findViewById(R.id.progressBar)
-        progressText   = findViewById(R.id.progressText)
         progressLayout = findViewById(R.id.progressLayout)
 
-        // Configurar RecyclerView
         adapter = ThumbAdapter(imgUris)
         recycler.layoutManager = GridLayoutManager(this, 3)
         recycler.adapter = adapter
 
         // Clicks para galería y cámara
         findViewById<View>(R.id.cardGallery).setOnClickListener {
-            // Lanza selector de múltiples imágenes
             pickMulti.launch("image/*")
         }
         findViewById<View>(R.id.cardCamera).setOnClickListener {
@@ -156,13 +149,8 @@ class BatchScanActivity : AppCompatActivity() {
     }
 
     private fun updateBadgeCount() {
-        // Actualiza el texto del badge; podrías reemplazar por getString(R.string.image_count, imgUris.size) si usas strings.xml
         badge.text = "${imgUris.size} imágenes"
     }
-
-    // ══════════════════════════════════════════════════════════════════
-    // Cámara y permiso
-    // ══════════════════════════════════════════════════════════════════
     private fun checkAndTakePhoto() {
         val perm = Manifest.permission.CAMERA
         if (ContextCompat.checkSelfPermission(this, perm) ==
@@ -170,7 +158,7 @@ class BatchScanActivity : AppCompatActivity() {
         ) {
             launchCamera()
         } else {
-            // Lanza el permiso. requestCameraPermission se registró en la propiedad.
+            // Lanza el permiso
             requestCameraPermission.launch(perm)
         }
     }
@@ -184,29 +172,21 @@ class BatchScanActivity : AppCompatActivity() {
             return // Exit if file creation fails
         }
 
-        // Construye Uri con FileProvider
+
         val photoUriForLaunch: Uri = try {
             FileProvider.getUriForFile(
                 this,
-                "${packageName}.fp",  // authority debe coincidir con tu manifest
+                "${packageName}.fp",
                 file
             )
         } catch (e: IllegalArgumentException) {
             toast("Error al obtener Uri para el archivo: ${e.localizedMessage}")
-            // Consider logging e for more details
             return // Exit if URI creation fails
         }
-
-        // Guarda la URI en la propiedad de la clase para usarla en el callback
         this.tmpPhotoUri = photoUriForLaunch
-
-        // Lanza el Intent de cámara con la URI local y no nula
         takePhoto.launch(photoUriForLaunch)
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    // Upload en background
-    // ══════════════════════════════════════════════════════════════════
     private fun uploadBatch() {
 
         progressLayout.visibility = View.VISIBLE
@@ -214,7 +194,6 @@ class BatchScanActivity : AppCompatActivity() {
 
         Thread {
 
-            /* ───── 1.  Construir MultipartBody con N imágenes ───── */
             val mpBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
 
             imgUris.forEachIndexed { i, uri ->
@@ -222,23 +201,22 @@ class BatchScanActivity : AppCompatActivity() {
                 val bytes = bitmapToJpeg(scaleBitmapIfNeeded(bmp))
 
                 mpBuilder.addFormDataPart(
-                    "files",                       // <──  nombre plural que tu API espera
+                    "files",
                     "img_$i.jpg",
                     bytes.toRequestBody("image/jpeg".toMediaType())
                 )
             }
             val mpBody = mpBuilder.build()
 
-            /* ───── 2.  Envolver en ProgressRequestBody ───── */
-            val bodyWithProg = ProgressRequestBody(mpBody) { pct ->
-                runOnUiThread { progressBar.progress = pct }
+            runOnUiThread {
+                progressBar.isIndeterminate = true
             }
-
-            /* ───── 3.  Petición HTTP ───── */
+            /*  Petición HTTP */
             val req = Request.Builder()
                 .url(getBatchUrl())
-                .post(bodyWithProg)
+                .post(mpBody)
                 .build()
+
 
             try {
                 val resp = client.newCall(req).execute()
@@ -264,10 +242,6 @@ class BatchScanActivity : AppCompatActivity() {
         }.start()
     }
 
-
-    // ══════════════════════════════════════════════════════════════════
-    // Utils bmp / bytes
-    // ══════════════════════════════════════════════════════════════════
     private fun getBitmap(uri: Uri): Bitmap? =
         contentResolver.openInputStream(uri)?.use { ins ->
             BitmapFactory.decodeStream(ins)

@@ -3,9 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    >
 
-    <!-- 1) APP BAR con Toolbar -->
+    <!-- Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,17 +19,17 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorSurface"
             app:title="@string/escaneo_lotes"
+            app:titleTextColor="@android:color/black"
             app:navigationIcon="@drawable/ic_arrow_back"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- 2) Contenido principal bajo la AppBar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Badge con nº de imágenes -->
+        <!-- nº de imágenes -->
         <TextView
             android:id="@+id/badgeCount"
             android:layout_width="wrap_content"
@@ -107,13 +109,13 @@
                 android:text="@string/seleccionar_m_ltiples"/>
         </LinearLayout>
 
-        <!-- Grid de miniaturas -->
+        <!-- miniaturas -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerThumbs"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clipToPadding="false"
-            android:paddingTop="16dp"
+            android:paddingTop="32dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="3"
             app:layout_constraintTop_toBottomOf="@id/cardCamera"
@@ -121,7 +123,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/progressLayout"/>
 
-        <!-- Barra de progreso + texto -->
+        <!-- Barra de progreso -->
         <LinearLayout
             android:id="@+id/progressLayout"
             android:layout_width="match_parent"
@@ -138,17 +140,9 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/progressText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 / 0 (0 %)"
-                android:layout_gravity="center_horizontal"
-                android:paddingTop="4dp"/>
         </LinearLayout>
 
-        <!-- FAB para lanzar OCR -->
+        <!-- Lanzar OCR -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabSend"
             android:layout_width="wrap_content"

@@ -4,12 +4,11 @@
     package="com.ejemplo.ocr">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Permiso lectura de almacenamiento hasta Android 12 (API ≤ 32) -->
+    <!-- Permiso lectura de almacenamiento -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"/>
 
-    <!-- Para Android 13+ (API ≥ 33), lectura de medios: -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"/>
 

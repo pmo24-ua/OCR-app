@@ -29,17 +29,18 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
 
 
 
-    /* ─────────── Modelo ─────────── */
+    /*  Modelo  */
     data class HistoryItem(val id: Int, val text: String, val date: LocalDate)
 
-    /** Filas que se muestran en la lista (header o item) */
     private sealed class Row {
         data class Header(val date: LocalDate) : Row()
         data class Item(val data: HistoryItem) : Row()
     }
 
-    /* ─────────── Adaptador ─────────── */
-    private class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    /*  Adaptador  */
+    private class HistoryAdapter(
+        private val scope: CoroutineScope
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val rows = mutableListOf<Row>()
 
@@ -53,8 +54,6 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
                 is Row.Header -> 0
                 is Row.Item   -> 1
             }
-
-        /* ---------- ViewHolders ---------- */
         class HeaderVH(v: View) : RecyclerView.ViewHolder(v) {
             val tv: TextView = v.findViewById(R.id.tvHeader)
         }
@@ -119,11 +118,11 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
                         AlertDialog.Builder(v.context)
                             .setMessage(R.string.confirmar_borrado)
                             .setPositiveButton(android.R.string.ok) { _, _ ->
-                                // 1) petición DELETE
-                                (v.context as? FragmentActivity)?.lifecycleScope?.launch {
+                                // petición DELETE
+                                    scope.launch {
                                     try {
                                         deleteHistoryItem(v.context, row.data.id)
-                                        // 2) quitar de la lista local y refrescar UI
+                                        // quitar de la lista local y refrescar UI
                                         val idx = rows.indexOf(row)
                                         rows.removeAt(idx)
                                         notifyItemRemoved(idx)
@@ -139,7 +138,6 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
                             .setNegativeButton(android.R.string.cancel, null)
                             .show()
                     }
-                    // 1) Creamos un solo listener que implemente OnGestureListener y OnDoubleTapListener
                     val gestureListener = object : GestureDetector.SimpleOnGestureListener() {
                         override fun onDoubleTap(e: MotionEvent): Boolean {
                             MaterialAlertDialogBuilder(vh.card.context)
@@ -151,22 +149,18 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
                         }
                     }
 
-                    // 2) Usamos el GestureDetector de plataforma
                     val gd = GestureDetector(vh.card.context, gestureListener).apply {
-                        // asignamos también el mismo listener para doble-tap
+                        // mismo listener para doble-tap
                         setOnDoubleTapListener(gestureListener)
                     }
 
-                    // 3) Enlazamos al card
+                    // Enlazamos al card
                     vh.card.setOnTouchListener { v, event ->
-                        // Delega en GestureDetector (captura doble tap)
+                        // (captura doble tap)
                         gd.onTouchEvent(event)
-
-                        // Cuando levantamos el dedo, consideramos que fue un "click"
                         if (event.action == MotionEvent.ACTION_UP) {
                             v.performClick()
                         }
-                        // Devolvemos false para dejar que el click original también se propague
                         false
                     }
 
@@ -176,46 +170,46 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
         }
     }
 
-    /* ─────────── Estado & vistas ─────────── */
-    private val allItems = mutableListOf<HistoryItem>()     // datos completos
-    private var selectedDate: LocalDate? = null             // filtro activo
-    private val adapter = HistoryAdapter()
+    /*  Estado & vistas  */
+    private val allItems = mutableListOf<HistoryItem>()
+    private var selectedDate: LocalDate? = null
+    private lateinit var adapter: HistoryAdapter
 
     private lateinit var swipe  : SwipeRefreshLayout
     private lateinit var recycler: RecyclerView
 
     private var isLoading = false
 
-    /* ─────────── Ciclo de vida ─────────── */
+
     override fun onViewCreated(v: View, s: Bundle?) {
         super.onViewCreated(v, s)
 
-        // 0) Toolbar con back arrow
+        // Toolbar
         v.findViewById<MaterialToolbar>(R.id.topBarHist)
             .setNavigationOnClickListener {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         val btnLogin = v.findViewById<MaterialButton>(R.id.btnIrLogin)
-        // 2) Dale un listener que abra la LoginActivity
+
         btnLogin.setOnClickListener {
             startActivity(
                 Intent(requireContext(), LoginActivity::class.java).apply {
-                    // si quieres limpiar el backstack:
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
             )
-            requireActivity().finish() // opcional, para que no se quede el HistoryFragment abierto
+            requireActivity().finish()
         }
 
         swipe    = v.findViewById(R.id.swipe)
         recycler = v.findViewById(R.id.recyclerHist)
 
         recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter       = adapter
+        adapter = HistoryAdapter(viewLifecycleOwner.lifecycleScope)
+        recycler.adapter = adapter
 
         swipe.setOnRefreshListener { loadHistory() }
 
-        // FAB calendario
+        // calendario
         v.findViewById<FloatingActionButton>(R.id.btnPickDate)
             .setOnClickListener { openDatePicker() }
 
@@ -226,7 +220,6 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
         super.onResume(); updateUi()
     }
 
-    /* ─────────── DatePicker & filtrado ─────────── */
     private fun openDatePicker() {
         val picker = MaterialDatePicker.Builder.datePicker()
             .setTitleText(R.string.filtrar_fecha)
@@ -240,13 +233,13 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
             createRowsAndShow()
         }
         picker.addOnNegativeButtonClickListener {
-            selectedDate = null      // “cancelar” = quitar filtro
+            selectedDate = null      // quitar filtro
             createRowsAndShow()
         }
         picker.show(parentFragmentManager, "pick")
     }
 
-    /* ─────────── UI según sesión ─────────── */
+    /*  UI según sesión  */
     private fun updateUi() {
         if (!AuthManager.isLoggedIn(requireContext())) {
             view?.findViewById<View>(R.id.layoutNoSession)?.visibility = View.VISIBLE
@@ -260,23 +253,27 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
         }
     }
 
-    /* ─────────── Red + transformación a filas ─────────── */
     private fun loadHistory() = viewLifecycleOwner.lifecycleScope.launch {
-        if (isLoading) return@launch           // ← bloqueo reentrante
+        if (isLoading) {
+            swipe.isRefreshing = false
+            return@launch
+        }
         isLoading = true
         swipe.isRefreshing = true
         try {
-            allItems.clear(); allItems += fetchHistory(requireContext())
+            allItems.clear()
+            allItems += fetchHistory(requireContext())
             createRowsAndShow()
         } catch (e: Exception) {
             Toast.makeText(requireContext(),
-                getString(R.string.error_fmt, e.message), Toast.LENGTH_LONG).show()
+                getString(R.string.error_fmt, e.message),
+                Toast.LENGTH_LONG).show()
         } finally {
             swipe.isRefreshing = false
+            isLoading = false
         }
     }
 
-    /** Agrupa los items por fecha, añade headers y los pasa al adapter */
     private fun createRowsAndShow() {
         val filtered = selectedDate?.let { sel ->
             allItems.filter { it.date == sel }

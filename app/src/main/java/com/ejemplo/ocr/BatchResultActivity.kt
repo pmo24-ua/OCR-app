@@ -20,17 +20,14 @@ class BatchResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_batch_result)
-
-        /* ───── datos recibidos ───── */
         val results = intent.getStringArrayListExtra("R") ?: arrayListOf()
 
-        /* ───── toolbar sólo con “volver” ───── */
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
             subtitle = getString(R.string.result_n, results.size)
             setNavigationOnClickListener { finish() }
         }
 
-        /* ───── lista de resultados ───── */
+        /* lista de resultados */
         findViewById<RecyclerView>(R.id.recyclerResults).run {
             layoutManager = LinearLayoutManager(this@BatchResultActivity)
             adapter       = BatchResultAdapter(this@BatchResultActivity, results)

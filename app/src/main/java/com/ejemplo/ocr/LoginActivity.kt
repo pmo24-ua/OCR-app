@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Si ya estás logueado, vas a Main y cierras
+        // Si ya está logueado, va a Main y cierra
         if (AuthManager.isLoggedIn(this)) {
             startHome(); return
         }
@@ -58,16 +58,14 @@ class LoginActivity : AppCompatActivity() {
         prog.visibility = View.VISIBLE
         btnLogin.isEnabled = false
 
-        // 1) Monta el JSON
         val json = JSONObject()
             .put("email", email)
             .put("password", pass)
             .toString()
 
-        // 2) Crea el RequestBody de tipo JSON
+        // Crea el RequestBody de tipo JSON
         val body = json.toRequestBody("application/json".toMediaType())
 
-            // 3) Envías exactamente igual
         val req = Request.Builder()
             .url("$ocrUrl/login")
             .post(body)
@@ -77,7 +75,7 @@ class LoginActivity : AppCompatActivity() {
                 showErr("Red: ${e.localizedMessage}")
             }
             override fun onResponse(call: Call, resp: Response) {
-                if (!resp.isSuccessful) return ui { showErr("HTTP ${resp.code}") }
+                if (!resp.isSuccessful) return ui { showErr("Error Login: HTTP ${resp.code}") }
                 val body = resp.body?.string() ?: return ui { showErr("Vacío") }
                 try {
                     val tok = JSONObject(body).getString("token")
@@ -101,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
     private fun startHome() {
         startActivity(
             Intent(this, HomeActivity::class.java).apply {
-                // limpias el back-stack para que el usuario no pueda volver al login
+                // para que el usuario no pueda volver al login
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         )

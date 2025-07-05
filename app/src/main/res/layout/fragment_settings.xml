@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- 1 ▸ Top bar con flecha atrás -->
+    <!-- Top bar con flecha atrás -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarSet"
         style="@style/Widget.Material3.Toolbar"
@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 2 ▸ Tarjeta perfil -->
+    <!-- Tarjeta perfil -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardProfile"
         app:cardCornerRadius="16dp"
@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Avatar redondo con gradiente morado-azul -->
+            <!-- Avatar -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgAvatar"
                 android:layout_width="64dp"
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <!-- Pequeño chip indicando tipo de cuenta -->
+                <!-- tipo de cuenta -->
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipAccount"
                     style="@style/Widget.Material3.Chip.Assist"
@@ -80,7 +80,7 @@
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-    <!-- 3 ▸ Botón “Seleccionar motor OCR” -->
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSelectEngine"
         style="@style/Widget.Material3.Button"
@@ -92,7 +92,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 4 ▸ Línea divisoria -->
+    <!-- Línea -->
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/dividerSelect"
         android:layout_width="0dp"
@@ -105,7 +105,6 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
 
-    <!-- 5 ▸ Botón “Cerrar sesión” -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
         style="@style/Widget.Material3.Button"
@@ -117,7 +116,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 6 ▸ Botón “Borrar historial” -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnClearHist"
         style="@style/Widget.Material3.Button"

@@ -5,7 +5,6 @@ import android.util.Base64
 import androidx.core.content.edit
 import org.json.JSONObject
 
-/**  Información mínima del usuario sacada del token  */
 data class UserInfo(
     val email: String,
     val isFree: Boolean,           // flag FREE / PREMIUM
@@ -19,8 +18,6 @@ object AuthManager {
     private fun prefs(ctx: Context) =
         ctx.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
-    /* ---------- login / logout ---------- */
-
     fun saveToken(ctx: Context, token: String) {
         prefs(ctx).edit { putString(KEY_TOKEN, token) }
     }
@@ -32,12 +29,7 @@ object AuthManager {
 
     fun logout(ctx: Context) = prefs(ctx).edit { clear() }
 
-    /* ---------- NUEVO:  leer info del usuario ---------- */
-
-    /**
-     * Devuelve los datos básicos embebidos en el JWT **sin** verificar firma.
-     * Retorna null si no hay token o le falta el e-mail.
-     */
+    /* Devuelve los datos básicos en el JWT **sin** verificar firma.  */
     fun getCurrentUser(ctx: Context): UserInfo? {
         val jwt = token(ctx) ?: return null
         val payloadB64 = jwt.split(".").getOrNull(1) ?: return null

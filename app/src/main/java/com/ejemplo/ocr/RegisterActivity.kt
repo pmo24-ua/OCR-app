@@ -91,7 +91,6 @@ class RegisterActivity : AppCompatActivity() {
         })
     }
 
-    // helpers -------------------------------------------------------------
     private fun ui(block: () -> Unit) = runOnUiThread(block)
     private fun toast(msg: String) =
         Toast.makeText(this@RegisterActivity, msg, Toast.LENGTH_LONG).show()
