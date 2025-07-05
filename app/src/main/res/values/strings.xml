@@ -39,9 +39,6 @@
     <string name="cuenta_premium">Cuenta Premium</string>
     <string name="no_logeado">Sin sesión</string>
     <string name="inicia_para_ver">Inicia sesión para ver tus datos</string>
-
-
-    <!--  Batch-result screen  -->
     <string name="resultados">Resultados</string>
     <!-- “Resultado 1”, “Resultado 2”… -->
     <string name="result_n">Resultado %1$d</string>

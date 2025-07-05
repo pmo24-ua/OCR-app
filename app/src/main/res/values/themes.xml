@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Tema base de la app, hereda de MaterialComponents (basado en AppCompat internamente) -->
     <style name="Theme.OCR" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Personaliza colores si quieres -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Otros atributos de tu tema -->
     </style>
-    <!-- Borde punteado para cards -->
     <style name="CardDashed">
         <item name="android:background">@drawable/card_dashed</item>
         <item name="android:gravity">center</item>
@@ -33,7 +29,6 @@
         <item name="cornerSize">50%</item>
     </style>
     <style name="Shape.Small" parent="ShapeAppearance.Material3.SmallComponent">
-        <!-- Hace los icon‑buttons perfectamente circulares -->
         <item name="cornerSize">20%</item>
     </style>    <style name="Shape.Medium" parent="ShapeAppearance.Material3.MediumComponent"/>
 
@@ -47,14 +42,11 @@
     </style>
 
     <style name="Widget.OCR.Card.IconButton" parent="Widget.MaterialComponents.Button">
-        <!-- tu padding e iconSize ya estaban -->
         <item name="android:padding">8dp</item>
         <item name="iconSize">20dp</item>
 
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
-
-        <!-- colores y shape como ya tenías -->
         <item name="backgroundTint">?attr/colorSurfaceContainerHigh</item>
         <item name="rippleColor">?attr/colorPrimary</item>
         <item name="shapeAppearance">@style/Shape.Small</item>
